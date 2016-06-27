@@ -59,6 +59,17 @@ public class TwoDBarCode {
 	}
 	
 
+	/**
+	 * 
+	 * @param content  二维码类容
+	 * @param width    宽度
+	 * @param height   高度
+	 * @param filePath    指定文件路径
+	 * @param fileName    指定文件名
+	 * @param logoPath    LOGO图片路径
+	 * @param format      保存的格式
+	 * @throws Exception
+	 */
 	public void createBarCode(String content, int width, int height,
 			String filePath, String fileName, String logoPath,String format) throws Exception {
 
@@ -78,14 +89,25 @@ public class TwoDBarCode {
 			File qrcodeFile = new File(filePath, fileName);
 			addLogo(bitMatrix, format, qrcodeFile, logoPath);
 		}
-		System.out.println("输出成功：" + filePath + File.separator + fileName);
+		System.out.println("二维码生成成功：" + filePath + File.separator + fileName);
 
 	}
 
+	/**
+	 * 
+	 * @param content   二维码类容
+	 * @param logoPath  Logo的图片路径
+	 * @throws Exception
+	 */
 	public void createBarCode(String content, String logoPath) throws Exception {
 		createBarCode(content, width, height, filePath, fileName, logoPath ,format);
 	}
 
+	/**
+	 * 
+	 * @param content  二维码类容
+	 * @throws Exception
+	 */
 	public void createBarCode(String content) throws Exception {
 		createBarCode(content, width, height, filePath, fileName, logoPath , format);
 	}
