@@ -5,8 +5,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,13 +13,14 @@ import javax.imageio.ImageIO;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 public class TwoDBarCode {
-	private static final int BLACK = 0xFF000000;
-	private static final int WHITE = 0xFFFFFFFF;	
+//	public static final int BLACK = 0xFF000000;
+//	public static final int WHITE = 0xFFFFFFFF;	
+//	public static final int BLUE = 0xFF104E8B;
+//	public static final int GREEN = 0xFF00CD00;
 
 	private int width = 300;
 	private int height = 300;
@@ -31,6 +30,7 @@ public class TwoDBarCode {
 	private String logoPath = null;
 	private String format = "png";
 	private String fileName = "zxing" + System.nanoTime() + "." + format;
+	private int color = Color.BLACK.getRgb();          //默认为黑色
 	
 	
 	public void setWidth(int width) {
@@ -59,6 +59,29 @@ public class TwoDBarCode {
 	}
 	
 
+
+
+	/**
+	 * 
+	 * @param content   二维码类容
+	 * @param logoPath  Logo的图片路径
+	 * @throws Exception
+	 */
+	public void createBarCode(String content, String logoPath) throws Exception {
+		createBarCode(content, width, height, filePath, fileName, logoPath ,format);
+	}
+
+	/**
+	 * 
+	 * @param content  二维码类容
+	 * @throws Exception
+	 */
+	public void createBarCode(String content) throws Exception {
+		createBarCode(content, width, height, filePath, fileName, logoPath , format);
+	}
+
+
+
 	/**
 	 * 
 	 * @param content  二维码类容
@@ -83,43 +106,28 @@ public class TwoDBarCode {
 		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 		BitMatrix bitMatrix = new MultiFormatWriter().encode(content,
 				BarcodeFormat.QR_CODE, width, height, hints);// 生成矩阵
-		Path path = FileSystems.getDefault().getPath(filePath, fileName);
-		MatrixToImageWriter.writeToPath(bitMatrix, format, path);// 输出图像
+		//Path path = FileSystems.getDefault().getPath(filePath, fileName);
+		//MatrixToImageWriter.writeToPath(bitMatrix, format, path);// 输出图像
 		if (logoPath != null && !logoPath.isEmpty()) {
 			File qrcodeFile = new File(filePath, fileName);
 			addLogo(bitMatrix, format, qrcodeFile, logoPath);
+		} else {
+			BufferedImage image = set2DCodeColor(bitMatrix);
+			image.flush();
+			ImageIO.write(image, format, new File(filePath,fileName));
 		}
 		System.out.println("二维码生成成功：" + filePath + File.separator + fileName);
 
 	}
-
-	/**
-	 * 
-	 * @param content   二维码类容
-	 * @param logoPath  Logo的图片路径
-	 * @throws Exception
-	 */
-	public void createBarCode(String content, String logoPath) throws Exception {
-		createBarCode(content, width, height, filePath, fileName, logoPath ,format);
-	}
-
-	/**
-	 * 
-	 * @param content  二维码类容
-	 * @throws Exception
-	 */
-	public void createBarCode(String content) throws Exception {
-		createBarCode(content, width, height, filePath, fileName, logoPath , format);
-	}
-
+	
 	private void addLogo(BitMatrix bitMatrix, String format, File qrcodeFile,
 			String logoPath) throws Exception {
 		writeToFile(bitMatrix, format, qrcodeFile, logoPath);
 	}
-
+	
 	private void writeToFile(BitMatrix matrix, String format, File file,
 			String logoPath) throws IOException {
-		BufferedImage image = toBufferedImage(matrix);
+		BufferedImage image = set2DCodeColor(matrix);
 		Graphics2D gs = image.createGraphics();
 
 		// 载入logo
@@ -140,7 +148,12 @@ public class TwoDBarCode {
 		}
 	}
 
-	private BufferedImage toBufferedImage(BitMatrix matrix) {
+	/**
+	 * 设置二维码的颜色
+	 * @param matrix
+	 * @return
+	 */
+	private BufferedImage set2DCodeColor(BitMatrix matrix) {
 		int width = matrix.getWidth();
 		int height = matrix.getHeight();
 		BufferedImage image = new BufferedImage(width, height,
@@ -148,10 +161,23 @@ public class TwoDBarCode {
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				image.setRGB(x, y, matrix.get(x, y) ? BLACK : WHITE);
+				image.setRGB(x, y, matrix.get(x, y) ?  getColor(): Color.WHITE.getRgb());
 			}
 		}
 		return image;
 	}
 
+	/**
+	 * 设置rgb值 
+	 * @param rgb 
+	 * @return
+	 * @see Color
+	 */
+	public int setColor(int rgb) {
+		return color = rgb;
+	}
+
+	public int getColor() {
+		return color;
+	} 
 }
