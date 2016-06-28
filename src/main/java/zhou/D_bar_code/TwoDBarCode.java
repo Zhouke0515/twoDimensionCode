@@ -17,10 +17,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 public class TwoDBarCode {
-//	public static final int BLACK = 0xFF000000;
-//	public static final int WHITE = 0xFFFFFFFF;	
-//	public static final int BLUE = 0xFF104E8B;
-//	public static final int GREEN = 0xFF00CD00;
 
 	private int width = 300;
 	private int height = 300;
@@ -62,7 +58,7 @@ public class TwoDBarCode {
 
 
 	/**
-	 * 
+	 * 创建带LOGO的二维码
 	 * @param content   二维码类容
 	 * @param logoPath  Logo的图片路径
 	 * @throws Exception
@@ -72,7 +68,7 @@ public class TwoDBarCode {
 	}
 
 	/**
-	 * 
+	 * 创建二维码
 	 * @param content  二维码类容
 	 * @throws Exception
 	 */
