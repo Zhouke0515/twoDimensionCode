@@ -10,6 +10,9 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -21,13 +24,13 @@ public class TwoDBarCode {
 	private int width = 300;
 	private int height = 300;
 	private String filePath = System.getProperty("user.dir") + File.separator
-			+ "2DBarCode";
+			+ "barCodeImage";
 	
 	private String logoPath = null;
 	private String format = "png";
 	private String fileName = "zxing" + System.nanoTime() + "." + format;
 	private int color = Color.BLACK.getRgb();          //默认为黑色
-	
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public void setWidth(int width) {
 		this.width = width;
@@ -104,15 +107,17 @@ public class TwoDBarCode {
 				BarcodeFormat.QR_CODE, width, height, hints);// 生成矩阵
 		//Path path = FileSystems.getDefault().getPath(filePath, fileName);
 		//MatrixToImageWriter.writeToPath(bitMatrix, format, path);// 输出图像
-		if (logoPath != null && !logoPath.isEmpty()) {
-			File qrcodeFile = new File(filePath, fileName);
+		File qrcodeFile = new File(filePath, fileName);
+		if (logoPath != null && !logoPath.isEmpty()) {			
 			addLogo(bitMatrix, format, qrcodeFile, logoPath);
+			logger.log(Level.INFO, "二维码生成成功：" + qrcodeFile.getAbsolutePath());
 		} else {
 			BufferedImage image = set2DCodeColor(bitMatrix);
 			image.flush();
-			ImageIO.write(image, format, new File(filePath,fileName));
+			ImageIO.write(image, format, qrcodeFile);
+			logger.log(Level.INFO, "二维码生成成功：" + qrcodeFile.getAbsolutePath());
 		}
-		System.out.println("二维码生成成功：" + filePath + File.separator + fileName);
+		
 
 	}
 	
@@ -129,9 +134,11 @@ public class TwoDBarCode {
 		// 载入logo
 		Image img = ImageIO.read(new File(logoPath));
 
+		//LOGO大小 ，二维码的1/5
 		int width = image.getWidth() / 5;
 		int height = image.getHeight() / 5;
 
+		//LOGO居中
 		int x = (image.getWidth() - width) / 2;
 		int y = (image.getHeight() - height) / 2;
 
